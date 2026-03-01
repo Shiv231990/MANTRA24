@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Checkout</title>
+    <style>
+        body {
+            background-color: #050d08;
+            color: #d1e7dd;
+            font-family: Georgia, serif;
+            text-align: center;
+            padding-top: 80px;
+        }
+
+        .pay-btn {
+            background-color: #2d6a4f;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .pay-btn:hover {
+            background-color: #40916c;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>🌿 Secure Checkout</h1>
+<p>Total Amount: ₹{{ amount|floatformat:2 }}</p>
+
+<button id="rzp-button" class="pay-btn">Pay Now</button>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+var options = {
+    "key": "{{ razorpay_key }}",
+    "amount": "{{ amount }}",
+    "currency": "INR",
+    "name": "Forest Store",
+    "description": "Order Payment",
+    "order_id": "{{ order_id }}",
+    "handler": function (response){
+        alert("✅ Payment Successful!");
+        window.location.href = "/";
+    },
+    "theme": {
+        "color": "#2d6a4f"
+    }
+};
+
+var rzp1 = new Razorpay(options);
+
+document.getElementById('rzp-button').onclick = function(e){
+    rzp1.open();
+    e.preventDefault();
+}
+</script>
+
+</body>
+</html>

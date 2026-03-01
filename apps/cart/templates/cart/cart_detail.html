@@ -1,0 +1,55 @@
+<style>
+    body { background-color: #050d08; color: #d1e7dd; font-family: 'Georgia', serif; padding: 40px; }
+    h1 { color: #4caf50; border-bottom: 2px solid #1b4332; margin-bottom: 30px; }
+    .cart-table { width: 100%; border-collapse: collapse; background-color: #0b1d12; border-radius: 12px; overflow: hidden; }
+    .cart-table th, .cart-table td { padding: 15px; text-align: left; border-bottom: 1px solid #1b4332; }
+    .cart-table th { background-color: #1b4332; color: #4caf50; }
+    .total-section { text-align: right; margin-top: 30px; padding: 20px; background-color: #0b1d12; border-radius: 12px; border: 1px solid #2d6a4f; }
+    .btn-checkout { background-color: #2d6a4f; color: white; border: none; padding: 15px 30px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1em; }
+    .btn-checkout:hover { background-color: #40916c; }
+    .back-link { color: #95d5b2; text-decoration: none; display: inline-block; margin-bottom: 20px; }
+</style>
+
+<a href="{% url 'product_list' %}" class="back-link">← Return to the Forest</a>
+
+<h1>🌲 Your Forest Basket</h1>
+
+{% if cart_items %}
+    <table class="cart-table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+    {% for item in cart_items %}
+    <tr>
+        <td>{{ item.product.name }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>₹{{ item.product.price }}</td>
+        <td>₹{{ item.subtotal }}</td>
+        <td>
+            <a href="{% url 'cart_remove' item.product.id %}" style="color: #ff4d4d; text-decoration: none; font-weight: bold;">
+                ✕ Remove
+            </a>
+        </td>
+    </tr>
+    {% endfor %}
+</tbody>
+    </table>
+
+    <div class="total-section">
+    <h2 style="color: #4caf50;">Total Amount: ₹{{ total_price }}</h2>
+    
+    <a href="{% url 'initiate_payment' %}" class="btn-checkout">
+        Proceed to Checkout
+    </a>
+
+</div>
+
+{% else %}
+    <p>Your basket is currently empty. The forest awaits!</p>
+{% endif %}

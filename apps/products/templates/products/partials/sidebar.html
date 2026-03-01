@@ -1,0 +1,5 @@
+{% for p in category_products %}
+    <a href="/products/{{ p.id }}/" class="sidebar-product-name nav-link py-1 ms-3">
+        {{ p.name }}
+    </a>
+{% endfor %}

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <title>Mantra24</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+    <style>
+        :root {
+            --bg-primary: #020617;
+            --bg-secondary: #0f172a;
+            --bg-card: #111827;
+            --accent: #10b981;
+            --text-primary: #e5e7eb;
+            --border: #1f2937;
+        }
+
+        /* 🌑 FULL DARK BACKGROUND */
+        html, body {
+            background: radial-gradient(circle at 20% 20%, #022c22, #020617 60%) !important;
+            background-attachment: fixed;
+            color: var(--text-primary);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+        }
+
+        .container, .container-fluid { background: transparent !important; }
+
+        /* 🔥 PREMIUM CARD */
+        .card {
+            background: linear-gradient(145deg, #0f172a, #111827) !important;
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+        }
+
+        /* Forms */
+        .form-control {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 0.15rem rgba(16,185,129,.25);
+            background: var(--bg-secondary);
+        }
+
+        /* PREMIUM BUTTON */
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            box-shadow: 0 4px 14px rgba(16,185,129,0.3);
+        }
+
+        /* GLASS NAVBAR */
+        .premium-navbar {
+            background: rgba(2, 6, 23, 0.75) !important;
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .nav-link:hover { color: #34d399 !important; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: #065f46; border-radius: 10px; }
+
+        /* Custom Toastr */
+        #toast-container > .toast-success { background-color: #065f46 !important; border: 1px solid #10b981; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top premium-navbar">
+    <div class="container">
+        <a class="navbar-brand fw-bold fs-4 text-success" href="{% url 'home' %}">🌲 Mantra24</a>
+        
+        <button class="navbar-toggler border-success" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <form class="d-flex mx-lg-auto w-50" action="{% url 'products:product_list' %}" method="get">
+                <input class="form-control me-2 rounded-pill" type="search" name="q" placeholder="Search forest products..." value="{{ request.GET.q }}">
+                <button class="btn btn-success rounded-pill px-4">Search</button>
+            </form>
+
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item me-3">
+                    <a href="{% url 'cart:cart_detail' %}" class="nav-link position-relative fs-5">
+                        🛒
+                        {% if cart_count > 0 %}
+                        <span class="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill" style="font-size: 0.6rem;">
+                            {{ cart_count }}
+                        </span>
+                        {% endif %}
+                    </a>
+                </li>
+
+                {% if user.is_authenticated %}
+                <li class="nav-item"><span class="nav-link text-light">👋 {{ user.username }}</span></li>
+                <li class="nav-item"><a href="{% url 'accounts:profile' %}" class="nav-link">Account</a></li>
+                <li class="nav-item ms-2">
+                    <form action="{% url 'logout' %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button class="btn btn-outline-success btn-sm rounded-pill">Logout</button>
+                    </form>
+                </li>
+                {% else %}
+                <li class="nav-item"><a href="{% url 'login' %}" class="nav-link">Login</a></li>
+                <li class="nav-item ms-2">
+                    <a href="{% url 'accounts:register' %}" class="btn btn-success btn-sm rounded-pill px-4">Join</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container py-5">
+    {% block content %}{% endblock %}
+</div>
+
+<footer class="footer text-center text-muted py-4 mt-5 border-top border-secondary">
+    <div class="container">© 2026 Mantra24 • Built with 🌲 forest spirit</div>
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    toastr.options = { 
+        "closeButton": true, 
+        "progressBar": true, 
+        "positionClass": "toast-top-right", 
+        "timeOut": "4000" 
+    };
+
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags == 'success' %}
+                toastr.success("{{ message }}");
+            {% elif message.tags == 'error' %}
+                toastr.error("{{ message }}");
+            {% else %}
+                toastr.info("{{ message }}");
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</script>
+
+</body>
+</html>

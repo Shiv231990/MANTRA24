@@ -1,0 +1,42 @@
+<div class="sidebar p-3">
+    <h5 class="text-success mb-3">Categories</h5>
+
+    <div class="accordion" id="categoryAccordion">
+
+        {% for category in categories %}
+        <div class="accordion-item bg-transparent border-0 mb-2">
+
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#cat{{ category.id }}">
+                    {{ category.name }}
+                </button>
+            </h2>
+
+            <div id="cat{{ category.id }}" class="accordion-collapse collapse">
+                <div class="accordion-body p-0">
+
+                    <ul class="list-group list-group-flush">
+                        {% for product in category.products.all %}
+                        <li class="list-group-item bg-transparent">
+                            <a href="{% url 'products:product_detail' product.pk %}" class="sidebar-product-name text-white text-decoration-none">
+                                {{ product.name }}
+                            </a>
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item text-muted">
+                            No products
+                        </li>
+                        {% endfor %}
+                    </ul>
+
+                </div>
+            </div>
+
+        </div>
+        {% endfor %}
+
+    </div>
+</div>

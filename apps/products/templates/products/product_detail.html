@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-5">
+    <div class="row" style="background-color: #1a237e10; padding: 30px; border-radius: 15px;">
+        
+        <div class="col-md-6 mb-4" data-aos="zoom-in">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" class="img-fluid rounded shadow-lg" alt="{{ product.name }}">
+            {% else %}
+                <div class="bg-dark text-white d-flex align-items-center justify-content-center rounded shadow" style="height: 450px;">
+                    <i class="fas fa-image fa-3x"></i> <span class="ms-3">No Image Available</span>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-6" data-aos="fade-left">
+            <h1 class="display-5 fw-bold text-white mb-2">{{ product.name }}</h1>
+            <p class="badge bg-primary fs-6">{{ product.subcategory.name }}</p>
+            
+            <hr class="border-secondary">
+            
+            <div class="display-6 fw-bold text-success mb-4">₹{{ product.price }}</div>
+            
+            <h5 class="text-white mb-3">Description</h5>
+            <p class="text-light opacity-75 fs-5 mb-5">
+                {{ product.description }}
+            </p>
+
+            <div class="d-flex gap-3">
+                <a href="/api/cart/add/{{ product.id }}/" class="btn btn-success btn-lg px-5 flex-grow-1">
+                    Add to Cart
+                </a>
+                <a href="{% url 'products:product_list' %}" class="btn btn-outline-light btn-lg">
+    Back to Shop
+</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

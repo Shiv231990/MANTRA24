@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container text-center mt-5">
+    <h1 class="text-success fw-bold">Checkout</h1>
+    <p class="text-light">Finalizing your <strong>Mantra24</strong> order.</p>
+    
+    <h3 class="text-white mb-4">Amount to pay: ₹{{ total_amount }}</h3>
+
+    <button id="rzp-button" class="btn btn-success btn-lg px-5">Pay with Razorpay</button>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    var options = {
+        "key": "{{ razorpay_key_id }}", 
+        "amount": "{{ amount_in_paise }}", 
+        "currency": "INR",
+        "name": "Mantra24",
+        "description": "Purchase from Mantra24 Store",
+        "order_id": "{{ razorpay_order_id }}",
+        "handler": function (response){
+            // Redirect to a success page or handle with AJAX
+            window.location.href = "/api/orders/payment-success/?payment_id=" + response.razorpay_payment_id;
+        },
+        "theme": {
+            "color": "#00ff88" // Matches your Mantra24 theme
+        }
+    };
+    var rzp1 = new Razorpay(options);
+    document.getElementById('rzp-button').onclick = function(e){
+        rzp1.open();
+        e.preventDefault();
+    }
+</script>
+
+{% endblock %}
