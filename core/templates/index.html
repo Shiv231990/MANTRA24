@@ -50,26 +50,41 @@
     <div class="row">
         {% for category in categories %}
         <div class="col-md-6 col-lg-4">
-            <a href="{% url 'category_products' category.id %}" class="category-card">
-                <div class="category-title">{{ category.name }}</div>
+            
+            <!-- ✅ Updated URL to use slug -->
+            <a href="{% url 'category_detail' category.slug %}" class="category-card">
+                
+                <div class="category-title">
+                    {{ category.name }}
+                </div>
+
+                <!-- ✅ Count only available products -->
                 <span class="badge bg-success-subtle text-success rounded-pill px-3">
-                    {{ category.products.count }} Products
+                    {{ category.products.filter(available=True).count }} Products
                 </span>
 
                 <div class="product-glimpse">
-                    <p class="text-white-50 small fw-bold mb-2">Featured Items:</p>
-                    {% for product in category.products.all|slice:":3" %}
+                    <p class="text-white-50 small fw-bold mb-2">
+                        Featured Items:
+                    </p>
+
+                    <!-- ✅ Show only available products -->
+                    {% for product in category.products.filter(available=True)|slice:":3" %}
                     <div class="glimpse-item d-flex justify-content-between">
                         <span>🌲 {{ product.name|truncatechars:20 }}</span>
                         <span class="text-success">₹{{ product.price }}</span>
                     </div>
                     {% empty %}
-                    <div class="text-muted small italic">Refreshing forest stock...</div>
+                    <div class="text-muted small fst-italic">
+                        No products available
+                    </div>
                     {% endfor %}
+
                 </div>
             </a>
         </div>
         {% endfor %}
     </div>
 </div>
+
 {% endblock %}

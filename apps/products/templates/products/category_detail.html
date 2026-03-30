@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mt-2">
+        <li class="breadcrumb-item">
+            <a href="{% url 'products:product_list' %}" class="text-success text-decoration-none">Home</a>
+        </li>
+        <li class="breadcrumb-item active text-white" aria-current="page">
+            {{ category.name }}
+        </li>
+      </ol>
+    </nav>
+
+    <h2 class="text-white fw-bold mb-4">Items in {{ category.name }}</h2>
+    
+    <div class="row">
+        {% for product in products %}
+        <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+            <div class="card p-3 h-100 shadow-sm border-0 product-card" style="background-color: #1e293b;">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" class="img-fluid rounded mb-3 product-img" style="height: 200px; object-fit: cover; width: 100%;">
+                {% else %}
+                    <a href="{% url 'products:product_detail' product.pk %}">
+                        <img src="{% static 'images/Logo.jpg' %}" 
+                             class="img-fluid rounded mb-3 product-img" 
+                             style="height: 200px; object-fit: contain; width: 100%; background: #000;"
+                             alt="Mantra24 Logo">
+                    </a>
+                {% endif %}
+                
+                <h5 class="fw-bold text-white mb-1">
+                    <a href="{% url 'products:product_detail' product.pk %}" class="text-decoration-none text-white">
+                        {{ product.name }}
+                    </a>
+                </h5>
+                
+                <p class="text-muted small mb-3">{{ product.description|truncatechars:50 }}</p>
+                
+                <div class="text-success fw-bold mb-3" style="font-size: 1.2rem;">₹{{ product.price }}</div>
+                
+                <form action="{% url 'cart:cart_add' product.id %}" method="post" class="mt-auto">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success w-100 fw-bold">Add to Cart</button>
+                </form>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <h3 class="text-muted">No products found in this category.</h3>
+            <a href="{% url 'products:product_list' %}" class="btn btn-outline-success mt-3">Back to All Categories</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

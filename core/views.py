@@ -1,15 +1,41 @@
 from django.shortcuts import render, get_object_or_404
-from apps.products.models import Category, Product
+from apps.products.models import Category
+
 
 def home(request):
-    """Fetches all categories to display as large blocks on the homepage"""
-    categories = Category.objects.all().prefetch_related('products')
-    return render(request, 'index.html', {'categories': categories})
+    """
+    Homepage:
+    - Displays only categories that have products
+    - Prefetches related products for performance
+    """
 
-def category_detail(request, category_id):
-    """Displays products for a specific category when a block is clicked"""
-    category = get_object_or_404(Category, id=category_id)
-    products = Product.objects.filter(category=category)
+    categories = (
+        Category.objects
+        .prefetch_related('products')
+        .filter(products__isnull=False)
+        .distinct()
+    )
+
+    return render(request, 'index.html', {
+        'categories': categories
+    })
+
+
+def category_detail(request, slug):
+    """
+    Category Detail Page:
+    - Displays products of a specific category
+    - Shows only available products
+    """
+
+    category = get_object_or_404(Category, slug=slug)
+
+    products = (
+        category.products
+        .filter(available=True)
+        .order_by('-created')
+    )
+
     return render(request, 'category_detail.html', {
         'category': category,
         'products': products

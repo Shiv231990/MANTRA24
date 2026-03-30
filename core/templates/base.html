@@ -6,100 +6,207 @@
     <title>Mantra24 • Premium Store</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <style>
+        /* Sidebar Styling to match Mantra24 Dark Theme */
+        .premium-sidebar {
+            background-color: #0d1117 !important;
+            border-right: 1px solid rgba(16, 185, 129, 0.2);
+            width: 300px !important;
+        }
+
+        .premium-sidebar .list-group-item {
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+
+        /* Hover effect for top-level categories */
+        .premium-sidebar .category-group > .list-group-item:hover {
+            background-color: rgba(16, 185, 129, 0.1) !important;
+            color: #10b981 !important;
+            padding-left: 30px;
+        }
+
+        .offcanvas-header {
+            background-color: #161b22;
+        }
+
+        .hamburger-btn {
+            font-size: 1.25rem;
+            line-height: 1;
+            padding: 0.25rem 0.5rem;
+        }
+
+        /* --- Nested Category Styles --- */
+        .dropdown-arrow {
+            font-size: 0.7rem;
+            transition: transform 0.3s ease;
+        }
+
+        [aria-expanded="true"] .dropdown-arrow {
+            transform: rotate(180deg);
+            color: #10b981;
+        }
+
+        .collapse.bg-dark {
+            background-color: rgba(22, 27, 34, 0.5) !important;
+        }
+
+        .ps-4 .list-group-item {
+            font-size: 0.9rem;
+            padding-top: 8px !important;
+            padding-bottom: 8px !important;
+        }
+
+        .ps-4 .list-group-item:hover {
+            color: #10b981 !important;
+            background-color: transparent !important;
+        }
+
+        .logout-btn-sidebar {
+            text-align: left;
+            width: 100%;
+        }
+    </style>
 </head>
 
 <body>
 
-<!-- ================= NAVBAR ================= -->
+<div class="offcanvas offcanvas-start premium-sidebar text-bg-dark" tabindex="-1" id="offcanvasCategory" aria-labelledby="offcanvasCategoryLabel">
+  <div class="offcanvas-header border-bottom border-success">
+    <h5 class="offcanvas-title fw-bold" id="offcanvasCategoryLabel">🌿 Mantra24 Menu</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body p-0">
+    <div class="list-group list-group-flush">
+        <div class="p-3 text-muted small text-uppercase fw-bold">Categories</div>
+        
+        {% for category in all_categories %}
+          <div class="category-group">
+            <a href="#collapse-{{ category.id }}" 
+               class="list-group-item list-group-item-action bg-transparent text-light border-0 py-3 d-flex justify-content-between align-items-center"
+               data-bs-toggle="collapse" 
+               role="button" 
+               aria-expanded="false">
+               {{ category.name }}
+               <span class="dropdown-arrow">▼</span>
+            </a>
+      
+            <div class="collapse bg-dark" id="collapse-{{ category.id }}">
+              <div class="list-group list-group-flush ps-4">
+                <a href="/api/products/?category={{ category.id }}" class="list-group-item list-group-item-action bg-transparent text-muted border-0 py-2 small">
+                  View All {{ category.name }}
+                </a>
+                
+                {% for sub in category.subcategories.all %}
+  <a href="{% url 'products:product_list' %}?subcategory={{ sub.id }}" class="list-group-item list-group-item-action bg-transparent text-light border-0 py-2 small">
+     {{ sub.name }}
+  </a>
+{% endfor %}
+              </div>
+            </div>
+          </div>
+        {% empty %}
+          <div class="p-3 text-muted small">No categories found.</div>
+        {% endfor %}
+        
+        <div class="p-3 text-muted small text-uppercase fw-bold mt-3">Account & Settings</div>
+        <a href="/api/cart/" class="list-group-item list-group-item-action bg-transparent text-light border-0 py-3">🛒 My Shopping Cart</a>
+        
+        {% if user.is_authenticated %}
+            <a href="{% url 'accounts:profile' %}" class="list-group-item list-group-item-action bg-transparent text-light border-0 py-3">👤 User Profile</a>
+            <form action="{% url 'accounts:logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="list-group-item list-group-item-action bg-transparent text-light border-0 py-3 logout-btn-sidebar">
+                    🚪 Logout
+                </button>
+            </form>
+        {% else %}
+            <a href="{% url 'accounts:login' %}" class="list-group-item list-group-item-action bg-transparent text-light border-0 py-3 text-success">🔑 Login / Register</a>
+        {% endif %}
+      </div>
+  </div>
+</div>
+
 <nav class="navbar navbar-expand-lg navbar-dark shadow-sm premium-navbar">
     <div class="container">
+        <button class="btn btn-outline-success me-3 hamburger-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCategory">
+            ☰
+        </button>
 
-        <!-- Logo -->
         <a class="navbar-brand fw-bold brand-logo" href="/api/products/">
             🌿 Mantra24
         </a>
 
-        <!-- Toggle -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarNav">
-
-            <!-- Search -->
-            <form class="d-flex mx-lg-auto w-100 w-lg-50" action="/api/products/" method="get">
-                <input class="form-control me-2 premium-input"
-                       type="search"
-                       name="q"
-                       placeholder="Search products..."
-                       value="{{ request.GET.q }}">
+            <form class="d-flex mx-lg-auto w-100 w-lg-50 my-3 my-lg-0" action="/api/products/" method="get">
+                <input class="form-control me-2 premium-input" type="search" name="q" placeholder="Search products..." value="{{ request.GET.q }}">
                 <button class="btn btn-success premium-btn" type="submit">Search</button>
             </form>
 
-            <!-- Right Menu -->
             <ul class="navbar-nav ms-lg-auto align-items-lg-center">
-
-                <!-- Cart -->
                 <li class="nav-item me-lg-3">
-                    <a href="/api/cart/" class="btn btn-outline-light btn-sm">
-                        🛒 Cart
-                    </a>
+                    <a href="/api/cart/" class="btn btn-outline-light btn-sm w-100 mb-2 mb-lg-0">🛒 Cart</a>
                 </li>
 
                 {% if user.is_authenticated %}
-
                 <li class="nav-item">
-                    <span class="nav-link text-light">
-                        Hi, {{ user.username }}
-                    </span>
+                    <span class="nav-link text-light">Hi, {{ user.username }}</span>
                 </li>
-
                 <li class="nav-item">
-                    <a href="/api/accounts/profile/" class="nav-link">
-                        👤 Account
-                    </a>
+                    <a href="{% url 'accounts:profile' %}" class="nav-link">👤 Account</a>
                 </li>
-
                 <li class="nav-item ms-lg-2">
-                    <form action="/api/accounts/logout/" method="post">
+                    <form action="{% url 'accounts:logout' %}" method="post">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+                        <button type="submit" class="btn btn-outline-light btn-sm w-100">Logout</button>
                     </form>
                 </li>
-
                 {% else %}
-
                 <li class="nav-item">
-                    <a href="/api/accounts/login/" class="btn btn-success btn-sm">Login</a>
+                    <a href="{% url 'accounts:login' %}" class="btn btn-success btn-sm w-100">Login</a>
                 </li>
-
                 {% endif %}
-
             </ul>
         </div>
     </div>
 </nav>
 
-<!-- ================= MAIN CONTENT ================= -->
 <main class="container py-4">
     {% block content %}
     {% endblock %}
 </main>
 
-<!-- ================= FOOTER ================= -->
 <footer class="text-center py-4 mt-5 border-top" style="border-color: rgba(16,185,129,0.2) !important;">
-    <small class="text-muted">
-        © 2026 Mantra24 • Premium Store
-    </small>
+    <small class="text-muted">© 2026 Mantra24 • Premium Store</small>
 </footer>
 
-<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// Updated Script to keep Offcanvas open when clicking dropdowns
+document.querySelectorAll('#offcanvasCategory .list-group-item').forEach(link => {
+    link.addEventListener('click', (e) => {
+        // If the item is a collapse toggle, do nothing (keep open)
+        if (link.getAttribute('data-bs-toggle') === 'collapse') {
+            return;
+        }
+        
+        // Otherwise, close the offcanvas
+        const offcanvasElement = document.getElementById('offcanvasCategory');
+        const instance = bootstrap.Offcanvas.getInstance(offcanvasElement);
+        if (instance) {
+            instance.hide();
+        }
+    });
+});
+</script>
 
 </body>
 </html>

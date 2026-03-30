@@ -2,103 +2,52 @@
 {% block content %}
 
 <style>
-    /* 🎨 DESIGNER ANIMATIONS & LINKS */
-    .product-link {
-        text-decoration: none;
-        transition: color 0.3s ease;
-    }
-    
-    .product-link:hover {
-        color: #00ff88 !important; 
-    }
-
-    /* 🔥 ULTIMATE SIDEBAR WHITE FORCE */
-    /* This targets the column, the list items, and the links directly */
-    .col-lg-3, 
-    .col-lg-3 *,
-    .col-lg-3 a, 
-    .col-lg-3 .sidebar-product-name,
-    .col-lg-3 .list-group-item,
-    .col-lg-3 .list-group-item a {
-        color: #ffffff !important; /* Force pure white */
-        opacity: 1 !important;    /* Force full brightness */
+    .category-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        background-color: #1e293b;
+        border: 1px solid rgba(16, 185, 129, 0.1);
         text-decoration: none !important;
-    }
-
-    /* Maintain the Mantra24 Green hover effect */
-    .col-lg-3 a:hover, 
-    .col-lg-3 .sidebar-product-name:hover,
-    .col-lg-3 .list-group-item a:hover {
-        color: #00ff88 !important;
-        transform: translateX(8px);
-        transition: all 0.3s ease;
-    }
-
-    /* Card hover lift effect */
-    .product-card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 250px;
     }
     
-    .product-card:hover {
+    .category-card:hover {
         transform: translateY(-10px);
-        box-shadow: 0 10px 20px rgba(0,255,136,0.2) !important;
+        box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2) !important;
+        border-color: #10b981 !important;
     }
 
-    .subcategory-text {
-        color: #448aff; 
-        font-weight: 600; 
-        font-size: 0.8rem;
+    .category-title {
+        color: #ffffff;
+        font-weight: bold;
+        font-size: 1.5rem;
+        margin-top: 15px;
     }
+
+    .category-icon { font-size: 3.5rem; }
 </style>
 
-<div class="row">
-    <div class="col-lg-3 mb-4">
-        {% include "partials/sidebar.html" %}
-    </div>
-
-    <div class="col-lg-9">
-        <div class="row">
-            {% for product in products %}
-            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:50 }}">
-                <div class="card p-3 h-100 shadow-sm border-0 product-card" style="background-color: #1e293b;">
-                    
-                    <h5 class="fw-bold mb-1">
-                        <a href="{% url 'products:product_detail' product.pk %}" class="product-link text-white">
-                            {{ product.name }}
-                        </a>
-                    </h5>
-                    
-                    <div class="subcategory-text mb-2">
-                        {{ product.subcategory.name }}
-                    </div>
-
-                    <p class="text-muted small mb-3">
-                        {{ product.description|truncatechars:60 }}
-                    </p>
-
-                    <div class="premium-price mb-3" style="color: #00ff88; font-size: 1.25rem; font-weight: bold;">
-                        ₹{{ product.price }}
-                    </div>
-
-                    <form action="{% url 'cart:cart_add' product.id %}" method="post">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-success w-100 mt-auto hvr-pulse-grow fw-bold">
-                            Add to Cart
-                        </button>
-                    </form>
+<div class="container">
+    <h2 class="text-white fw-bold mb-4 mt-2">Explore Categories</h2>
+    
+    <div class="row">
+        {% for category in categories %}
+        <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+            <a href="{% url 'products:product_list' %}?category={{ category.id }}" class="card p-4 h-100 category-card rounded-4 shadow-sm">
+                <div class="category-icon">
+                    {% if category.name == "Electronics" %} 💻
+                    {% elif category.name == "Clothing" %} 👕
+                    {% elif category.name == "Home & Kitchen" %} 🏠
+                    {% else %} 📦 {% endif %}
                 </div>
-            </div>
-            {% endfor %}
+                <h3 class="category-title">{{ category.name }}</h3>
+                <p class="text-muted small mt-3 mb-0">Discover {{ category.name }}</p>
+            </a>
         </div>
+        {% endfor %}
     </div>
 </div>
-
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script>
-  AOS.init({
-      duration: 800,
-      once: true
-  });
-</script>
-
 {% endblock %}

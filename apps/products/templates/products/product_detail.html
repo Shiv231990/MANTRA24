@@ -6,12 +6,12 @@
         
         <div class="col-md-6 mb-4" data-aos="zoom-in">
             {% if product.image %}
-                <img src="{{ product.image.url }}" class="img-fluid rounded shadow-lg" alt="{{ product.name }}">
-            {% else %}
-                <div class="bg-dark text-white d-flex align-items-center justify-content-center rounded shadow" style="height: 450px;">
-                    <i class="fas fa-image fa-3x"></i> <span class="ms-3">No Image Available</span>
-                </div>
-            {% endif %}
+    <img src="{{ product.image.url }}" class="img-fluid rounded shadow w-100">
+{% else %}
+    <img src="{% static 'images/Logo.jpg' %}" 
+         class="img-fluid rounded shadow w-100" 
+         style="background: #000; object-fit: contain; max-height: 500px;">
+{% endif %}
         </div>
 
         <div class="col-md-6" data-aos="fade-left">
