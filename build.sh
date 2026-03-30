@@ -2,7 +2,10 @@
 # exit on error
 set -o errexit
 
+# Install dependencies
+pip install --upgrade pip
 pip install -r requirements.txt
 
+# Convert static files and sync database
 python manage.py collectstatic --no-input
 python manage.py migrate
