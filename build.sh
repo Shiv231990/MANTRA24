@@ -1,11 +1,13 @@
-#!/usr/bin/env bash
-# exit on error
+# Exit if any command fails
 set -o errexit
 
-# Install dependencies
-pip install --upgrade pip
 pip install -r requirements.txt
 
-# Convert static files and sync database
-python manage.py collectstatic --no-input
+# Run migrations automatically
 python manage.py migrate
+
+# Seed your products (Mantra Wireless, etc.)
+python seed_data.py
+
+# Collect CSS/Images
+python manage.py collectstatic --no-input
