@@ -19,7 +19,7 @@ else:
     print(f"⚠️ Warning: .env file not found at {env_file}")
 
 # Core Settings
-SECRET_KEY = env('SECRET_KEY', default='unsafe-secret-key')
+SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = env('DEBUG', default=True)
 ALLOWED_HOSTS = ['*']
 
