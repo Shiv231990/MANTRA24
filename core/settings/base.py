@@ -1,4 +1,5 @@
 import os
+import dj_database_url
 from pathlib import Path
 from datetime import timedelta
 import environ
@@ -83,9 +84,9 @@ TEMPLATES = [
 # Database
 # --- Database Configuration ---
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL')
+    )
 }
 
 # 1. Check if Railway provided a DATABASE_URL
