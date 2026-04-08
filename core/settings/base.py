@@ -148,6 +148,7 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # --- Static & Media Files Configuration ---
+# --- Static & Media Files Configuration ---
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
@@ -156,12 +157,13 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# SWITCH BETWEEN LOCAL AND CLOUDINARY
 if DEBUG:
-    # Development: Use your laptop's local folder
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+    # Default storage for development
     STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 else:
-    # Production: Use Cloudinary
+    # Use Cloudinary for MEDIA (uploaded images)
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-    STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
+    
+    # Use WhiteNoise for STATIC (CSS/JS) - much more stable on Railway
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
